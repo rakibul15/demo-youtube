@@ -1,0 +1,28 @@
+*.env
+.env
+.env*
+# Ignore node_modules folder
+node_modules
+
+# Ignore build output
+dist
+build
+# Ignore package-lock and yarn lock files
+package-lock.json
+yarn.lock
+
+# Ignore log files
+*.log
+
+# Ignore WebStorm project files
+.idea/
+
+# Ignore coverage directory (for test coverage reports)
+coverage/
+
+# Ignore any specific files or folders
+# custom_directory/
+# custom_file.ext
+
+# Ignore Git ignored files
+.gitignore
