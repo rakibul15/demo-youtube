@@ -172,6 +172,7 @@ cmake-build-*/
 out/
 
 # mpeltonen/sbt-idea plugin
+.idea
 .idea_modules/
 
 # JIRA plugin
@@ -192,4 +193,3 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
-# End of https://mrkandreev.name/snippets/gitignore-generator/#Node,WebStorm
