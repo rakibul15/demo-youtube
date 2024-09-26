@@ -1,15 +1,19 @@
 {
   "name": "demo-youtube",
   "version": "1.0.0",
-  "description": "learnign backend with JS",
+  "description": "learning backend with JS",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.js"
   },
   "keywords": [
     "JavaScript",
     "Backend"
   ],
   "author": "Rakibul Hasan",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
 }
