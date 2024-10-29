@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+// routes Import
+import userRoutes from "./routes/user.routes.js";
 
 dotenv.config();    // load environment variables from .env file
 
@@ -18,7 +20,10 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
-export{app}
+// routes declaration
+app.use("/api/v1/users", userRoutes);
+
+export {app}
 
 // app.listen(process.env.PORT, () => {
 //     console.log(`Server is running on port ${process.env.PORT}`);
