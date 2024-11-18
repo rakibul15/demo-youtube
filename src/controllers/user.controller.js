@@ -282,13 +282,20 @@ const updateUserCover = asyncHandler(async (req, res) => {
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
+
   if (!username?.trim()) {
     throw new ApiError(400, "Username is required");
   }
+
+  // Ensure `req.user` is available
+  if (!req.user || !req.user._id) {
+    throw new ApiError(401, "User is not authenticated");
+  }
+
   const channel = await User.aggregate([
     {
       $match: {
-        username: username?.toLowerCase(),
+        username: username.toLowerCase(), // Ensure case-insensitivity
       },
     },
     {
@@ -315,16 +322,13 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         channelsSubscribedToCount: {
           $size: "$subscribedTo",
         },
+        // Check if `req.user._id` exists in the subscribers array
         isSubscribed: {
-          $cond: {
-            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
-            then: true,
-            else: false,
-          },
+          $in: [new mongoose.Types.ObjectId(req.user._id), "$subscribers.subscriber"],
         },
-
       },
-    }, {
+    },
+    {
       $project: {
         fullName: 1,
         username: 1,
@@ -337,16 +341,18 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       },
     },
   ]);
-  if (!channel?.length) {
-    throw new ApiError(404, "Channel does not exists");
+
+  if (!channel || !channel.length) {
+    throw new ApiError(404, "Channel does not exist");
   }
 
-  return res.status(200)
+  return res
+    .status(200)
     .json(
-      new ApiResponse(200, channel[0], "User channel fetched successfully"),
+      new ApiResponse(200, channel[0], "User channel fetched successfully")
     );
-
 });
+
 
 const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
