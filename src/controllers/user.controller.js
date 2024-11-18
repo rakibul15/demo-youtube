@@ -4,7 +4,8 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
+import { Video } from "../models/video.model.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -395,6 +396,42 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     );
 }) ;
 
+const addToWatchHistory = asyncHandler(async (req, res) => {
+  const { videoId } = req.body; // The video ID to add to watch history
+
+  // Validate videoId format
+  if (!videoId || !isValidObjectId(videoId)) {
+    return res.status(400).json(new ApiResponse(400, null, "Invalid video ID format."));
+  }
+
+  try {
+    // Check if the video exists in the database
+    const videoExists = await Video.findById(videoId);
+    if (!videoExists) {
+      return res.status(404).json(new ApiResponse(404, null, "Video not found."));
+    }
+
+    // Add the video ID to the user's watchHistory
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $addToSet: { watchHistory: videoId } }, // Prevent duplicate entries
+      { new: true } // Return the updated document
+    );
+
+    if (!user) {
+      return res.status(404).json(new ApiResponse(404, null, "User not found."));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, user.watchHistory, "Watch history updated successfully."));
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(new ApiResponse(500, null, "Failed to update watch history."));
+  }
+});
+
+
 export {
   registerUser,
   loginUser,
@@ -406,5 +443,6 @@ export {
   updateUserAvatar,
   updateUserCover,
   getUserChannelProfile,
-  getWatchHistory
+  getWatchHistory,
+  addToWatchHistory
 };
