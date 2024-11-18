@@ -4,7 +4,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   deleteVideo,
   getAllVideos, getAllVideosByUserId,
-  getVideoById,
+  getVideoById, incrementVideoViews,
   publishAVideo, togglePublishStatus,
   updateVideo,
 } from "../controllers/video.controller.js";
@@ -23,7 +23,7 @@ router.route("/:videoId")
   .get(getVideoById)
   .patch(upload.fields([{ name: "videoFile", maxCount: 1 }, { name: "thumbnail", maxCount: 1 }]), updateVideo);
 
-
+router.patch("/:videoId/views", incrementVideoViews);
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
 
 

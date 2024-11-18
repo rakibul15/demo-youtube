@@ -240,6 +240,30 @@ const getAllVideosByUserId = asyncHandler(async (req, res) => {
 });
 
 
+export const incrementVideoViews = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+
+  // Validate video ID
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video ID");
+  }
+
+  // Find the video by ID
+  const video = await Video.findById(videoId)
+  if (!video) {
+    throw new ApiError(404, "Video not found");
+  }
+  // Increment the views count
+  video.views += 1;
+  await video.save();
+
+  res.status(200).json({
+    success: true,
+    message: "View count incremented successfully",
+    data: { views: video.views },
+  });
+});
+
 
 export {
   getAllVideos,
