@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 // routes Import
 import userRoutes from "./routes/user.routes.js";
 import videoRoutes from "./routes/video.routes.js";
+import subscriptionRoutes from "./routes/subscription.routes.js";
 
 dotenv.config();    // load environment variables from .env file
 
@@ -24,6 +25,8 @@ app.use(cookieParser());
 // routes declaration
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/video", videoRoutes);
+app.use("/api/v1/subscription", subscriptionRoutes);
+
 
 export {app}
 
