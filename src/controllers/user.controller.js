@@ -8,16 +8,16 @@ import mongoose, { isValidObjectId } from "mongoose";
 import { Video } from "../models/video.model.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new ApiError(404, "User not found");
-    }
-    // Check if user model has token generation methods
-    if (typeof user.generateAccessToken !== "function" || typeof user.generateRefreshToken !== "function") {
-      throw new ApiError(500, "Token generation methods are not defined in the User model");
-    }
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  // Check if user model has token generation methods
+  if (typeof user.generateAccessToken !== "function" || typeof user.generateRefreshToken !== "function") {
+    throw new ApiError(500, "Token generation methods are not defined in the User model");
+  }
 
+  try {
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
@@ -31,7 +31,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 };
 
 
-const registerUser = asyncHandler(async (req, res, next) => {
+const registerUser = asyncHandler(async (req, res) => {
   const { username, email, fullName, password } = req.body;
   if (
     [fullName, email, username, password].some((field) => field?.trim() === "")
@@ -85,7 +85,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
 });
 
 
-const loginUser = asyncHandler(async (req, res, next) => {
+const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
   if (!username && !email) {
     throw new ApiError(400, "username or email required");
@@ -156,44 +156,58 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
+  // Get the incoming refresh token from cookies or body
   const incomingRefreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+
+  // Check if refresh token is present, if not throw an unauthorized error
   if (!incomingRefreshToken) {
-    throw new ApiError(401, "Unauthorized Request");
+    throw new ApiError(401, "Unauthorized Request: Refresh token is missing");
+  }
+
+  // Decode the token and check if it's valid
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+  } catch (error) {
+    throw new ApiError(401, "Invalid refresh token: Token verification failed");
+  }
+
+  // Find the user associated with the decoded token
+  const user = await User.findById(decodedToken?._id);
+  if (!user) {
+    throw new ApiError(401, "Invalid refresh token: User not found");
+  }
+
+  // Check if the incoming refresh token matches the user's refresh token
+  if (incomingRefreshToken !== user.refreshToken) {
+    throw new ApiError(401, "Refresh token is expired or used");
   }
 
   try {
-    const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const user = await User.findById(decodedToken?._id);
-
-    if (!user) {
-      throw new ApiError(401, "Invalid refresh token");
-    }
-    if (incomingRefreshToken !== user.refreshToken) {
-      throw new ApiError(401, "Refresh token is expired or used");
-    }
+    // Generate new access and refresh tokens
     const options = {
       httpOnly: true,
       secure: true,
     };
     const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user._id);
+
+    // Send the new tokens as cookies in the response
     return res.status(200)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", newRefreshToken, options)
       .json(
         new ApiResponse(
           200,
-          {
-            accessToken,
-            refreshToken: newRefreshToken,
-          },
-          "Access token refreshed successfully",
-        ),
+          { accessToken, refreshToken: newRefreshToken },
+          "Access token refreshed successfully"
+        )
       );
   } catch (error) {
-    throw new ApiError(401, error?.message || "Invalid refresh token");
+    // Catch any unexpected errors during the token generation process
+    throw new ApiError(500, "Error while generating new tokens: " + (error?.message || error));
   }
-
 });
+
 
 
 const changeCurrentUserPassword = asyncHandler(async (req, res) => {
