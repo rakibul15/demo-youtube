@@ -1,8 +1,8 @@
 import mongoose, { isValidObjectId } from "mongoose";
-import {Comment} from "../models/comment.model.js"
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import { Comment } from "../models/comment.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const getVideoComments = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
@@ -56,39 +56,38 @@ const getVideoComments = asyncHandler(async (req, res) => {
         limit: pageSize,
         result,
       },
-      `Comments for video fetched successfully.`
-    )
+      `Comments for video fetched successfully.`,
+    ),
   );
 });
 
 
-
 const addComment = asyncHandler(async (req, res) => {
   // TODO: add a comment to a video
-  const {content,video}=req.body;
+  const { content, video } = req.body;
 
-  const userId=req.user._id;
-  if(!userId){
+  const userId = req.user._id;
+  if (!userId) {
     throw new ApiError(400, "Invalid user ID.");
   }
-  if(!content || !isValidObjectId(video)){
-    throw new ApiError(400, "Content and Video ID are required")
+  if (!content || !isValidObjectId(video)) {
+    throw new ApiError(400, "Content and Video ID are required");
   }
 
   const comment = await Comment.create({
     owner: userId,
     video,
-    content
-  })
+    content,
+  });
   return res.status(201).json(
     new ApiResponse(
       200,
       comment,
-      "Comment created successfully."
-    )
-  )
+      "Comment created successfully.",
+    ),
+  );
 
-})
+});
 
 const updateComment = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
@@ -118,14 +117,13 @@ const updateComment = asyncHandler(async (req, res) => {
   const updatedComment = await Comment.findByIdAndUpdate(
     commentId,
     { content: content.trim() },
-    { new: true } // returns the updated document
+    { new: true }, // returns the updated document
   );
 
   return res.status(200).json(
-    new ApiResponse(200, updatedComment, "Comment updated successfully.")
+    new ApiResponse(200, updatedComment, "Comment updated successfully."),
   );
 });
-
 
 
 const deleteComment = asyncHandler(async (req, res) => {
@@ -151,7 +149,7 @@ const deleteComment = asyncHandler(async (req, res) => {
   const deletedComment = await Comment.findByIdAndDelete(commentId);
 
   return res.status(200).json(
-    new ApiResponse(200, deletedComment, "Comment deleted successfully.")
+    new ApiResponse(200, deletedComment, "Comment deleted successfully."),
   );
 });
 
@@ -160,5 +158,5 @@ export {
   getVideoComments,
   addComment,
   updateComment,
-  deleteComment
-}
+  deleteComment,
+};

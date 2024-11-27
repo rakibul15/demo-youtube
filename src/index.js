@@ -1,25 +1,24 @@
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
-import {app} from "./app.js";
+import { app } from "./app.js";
 
 // Load environment variables from .env file
 dotenv.config({
-    path: "./.env",  // Corrected the path to .env
+  path: "./.env",  // Corrected the path to .env
 });
 
 // Connect to MongoDB
 connectDB()
-    .then(() => {
-        // Start the server after a successful connection
-        app.listen(process.env.PORT || 8000, () => {
-            console.log(`Server is running on port: ${process.env.PORT || 8000}`);
-        });
-    })
-    .catch((err) => {
-        // Log error if connection to MongoDB fails
-        console.error("MongoDB connection error: ", err);
+  .then(() => {
+    // Start the server after a successful connection
+    app.listen(process.env.PORT || 8000, () => {
+      console.log(`Server is running on port: ${process.env.PORT || 8000}`);
     });
-
+  })
+  .catch((err) => {
+    // Log error if connection to MongoDB fails
+    console.error("MongoDB connection error: ", err);
+  });
 
 
 //

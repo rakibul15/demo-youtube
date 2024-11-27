@@ -3,13 +3,16 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   deleteVideo,
-  getAllVideos, getAllVideosByUserId,
-  getVideoById, incrementVideoViews,
-  publishAVideo, togglePublishStatus,
+  getAllVideos,
+  getAllVideosByUserId,
+  getVideoById,
+  incrementVideoViews,
+  publishAVideo,
+  togglePublishStatus,
   updateVideo,
 } from "../controllers/video.controller.js";
 
-const router=Router();
+const router = Router();
 router.use(verifyJWT);
 
 router.route("/")
@@ -25,7 +28,6 @@ router.route("/:videoId")
 
 router.patch("/:videoId/views", incrementVideoViews);
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
-
 
 
 export default router;

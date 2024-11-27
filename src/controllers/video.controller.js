@@ -133,7 +133,6 @@ const deleteVideo = asyncHandler(async (req, res) => {
 });
 
 
-
 const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const userId = req.user._id; // Get the logged-in user's ID
@@ -174,7 +173,7 @@ const updateVideo = asyncHandler(async (req, res) => {
   const updatedVideo = await Video.findByIdAndUpdate(videoId, updates, { new: true });
 
   res.status(200).json(
-    new ApiResponse(200, { video: updatedVideo }, "Video updated successfully")
+    new ApiResponse(200, { video: updatedVideo }, "Video updated successfully"),
   );
 });
 
@@ -205,7 +204,6 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, video, "Video publish status updated"));
 });
-
 
 
 const getAllVideosByUserId = asyncHandler(async (req, res) => {
@@ -249,7 +247,7 @@ export const incrementVideoViews = asyncHandler(async (req, res) => {
   }
 
   // Find the video by ID
-  const video = await Video.findById(videoId)
+  const video = await Video.findById(videoId);
   if (!video) {
     throw new ApiError(404, "Video not found");
   }
@@ -272,5 +270,5 @@ export {
   deleteVideo,
   updateVideo,
   togglePublishStatus,
-  getAllVideosByUserId
+  getAllVideosByUserId,
 };

@@ -3,11 +3,11 @@ import mongoose, { Schema } from "mongoose";
 const playListSchema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
-    require:true
+    require: true,
   },
   video: [{
     type: Schema.Types.ObjectId,
@@ -16,7 +16,7 @@ const playListSchema = new Schema({
   owner: {
     type: Schema.Types.ObjectId,
     ref: "User",
-  }
-},{timestamps:true})
+  },
+}, { timestamps: true });
 
 export const PlayList = mongoose.model("PlayList", playListSchema);

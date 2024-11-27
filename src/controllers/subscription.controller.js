@@ -55,8 +55,8 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     new ApiResponse(
       200,
       subscribers,
-      `Subscribers for channel ${channelId} fetched successfully.`
-    )
+      `Subscribers for channel ${channelId} fetched successfully.`,
+    ),
   );
 });
 
@@ -79,8 +79,8 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     new ApiResponse(
       200,
       subscribedChannels,
-      `Subscribed channels for user ${subscriberId} fetched successfully.`
-    )
+      `Subscribed channels for user ${subscriberId} fetched successfully.`,
+    ),
   );
 });
 

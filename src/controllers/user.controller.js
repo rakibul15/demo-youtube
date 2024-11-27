@@ -199,15 +199,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { accessToken, refreshToken: newRefreshToken },
-          "Access token refreshed successfully"
-        )
+          "Access token refreshed successfully",
+        ),
       );
   } catch (error) {
     // Catch any unexpected errors during the token generation process
     throw new ApiError(500, "Error while generating new tokens: " + (error?.message || error));
   }
 });
-
 
 
 const changeCurrentUserPassword = asyncHandler(async (req, res) => {
@@ -363,7 +362,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, channel[0], "User channel fetched successfully")
+      new ApiResponse(200, channel[0], "User channel fetched successfully"),
     );
 });
 
@@ -414,7 +413,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, user[0].watchHistory, "Watch history fetched successfully"),
     );
-}) ;
+});
 
 const addToWatchHistory = asyncHandler(async (req, res) => {
   const { videoId } = req.body; // The video ID to add to watch history
@@ -435,7 +434,7 @@ const addToWatchHistory = asyncHandler(async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { $addToSet: { watchHistory: videoId } }, // Prevent duplicate entries
-      { new: true } // Return the updated document
+      { new: true }, // Return the updated document
     );
 
     if (!user) {
@@ -464,5 +463,5 @@ export {
   updateUserCover,
   getUserChannelProfile,
   getWatchHistory,
-  addToWatchHistory
+  addToWatchHistory,
 };

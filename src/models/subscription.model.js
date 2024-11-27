@@ -1,4 +1,4 @@
-import mongoose,{Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const subscriptionSchema = new Schema({
   subscriber: {
@@ -10,7 +10,7 @@ const subscriptionSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,
-  }
-},{timestamps:true})
+  },
+}, { timestamps: true });
 
 export const Subscription = mongoose.model("Subscription", subscriptionSchema);
